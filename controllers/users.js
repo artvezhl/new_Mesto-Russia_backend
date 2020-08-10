@@ -1,17 +1,19 @@
 const User = require('../models/user');
 
 const userErrorsHandler = (err, res) => {
-  if (err.errors.name) {
-    res.status(400).send({ message: "Поле 'name' не является валидным!" });
-    return;
-  }
-  if (err.errors.about) {
-    res.status(400).send({ message: "Поле 'about' не является валидным!" });
-    return;
-  }
-  if (err.errors.avatar) {
-    res.status(400).send({ message: "Поле 'avatar' не является валидным!" });
-    return;
+  if (err.name === 'ValidationError') {
+    if (err.errors.name) {
+      res.status(400).send(err.errors.name.message);
+      return;
+    }
+    if (err.errors.about) {
+      res.status(400).send(err.errors.about.message);
+      return;
+    }
+    if (err.errors.avatar) {
+      res.status(400).send(err.errors.avatar.message);
+      return;
+    }
   }
   res.status(500).send({ message: 'На сервере произошла ошибка' });
 };
@@ -32,8 +34,9 @@ module.exports.getUser = async (req, res) => {
     const user = await User.findById(req.params.userId);
     res.send(user);
   } catch (err) {
-    if (err.value) {
-      res.status(404).send({ message: `Пользователь с номером ${err.value} отсутствует!` });
+    console.log(err.name);
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: `Пользователь с номером ${req.params.userId} отсутствует!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });

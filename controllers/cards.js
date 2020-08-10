@@ -17,16 +17,9 @@ module.exports.createCard = async (req, res) => {
     const newCard = await Card.create({ name, link, owner: req.user._id });
     res.send(newCard);
   } catch (err) {
-    if (err.errors.name && err.errors.link) {
-      res.status(400).send({ message: "Поля 'Имя' и 'Ссылка' не являются валидными!" });
-      return;
-    }
-    if (err.errors.name) {
-      res.status(400).send({ message: "Поле 'Имя' не является валидным!" });
-      return;
-    }
-    if (err.errors.link) {
-      res.status(400).send({ message: "Поле 'link' не является валидным!" });
+    if (err.name == 'ValidationError') {
+      const field = err.errors.name ? err.errors.name : err.errors.link;
+      res.status(400).send(field.message);
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
@@ -37,10 +30,11 @@ module.exports.createCard = async (req, res) => {
 module.exports.removeCard = async (req, res) => {
   try {
     const cardToRemove = await Card.findByIdAndRemove(req.params.cardId);
+    if (!cardToRemove) throw new Error();
     res.send(cardToRemove);
   } catch (err) {
-    if (err.value) {
-      res.status(404).send({ message: `Карточка с номером ${err.value} отсутствует!` });
+    if (err instanceof Error) {
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
