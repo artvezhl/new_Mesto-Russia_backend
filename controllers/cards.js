@@ -17,7 +17,7 @@ module.exports.createCard = async (req, res) => {
     const newCard = await Card.create({ name, link, owner: req.user._id });
     res.send(newCard);
   } catch (err) {
-    if (err.name == 'ValidationError') {
+    if (err.name === 'ValidationError') {
       const field = err.errors.name ? err.errors.name : err.errors.link;
       res.status(400).send(field.message);
       return;

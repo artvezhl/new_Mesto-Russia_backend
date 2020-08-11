@@ -57,9 +57,9 @@ module.exports.createUser = async (req, res) => {
 // обновление профиля
 module.exports.updateProfile = async (req, res) => {
   try {
-    const { name, about, avatar } = req.body;
+    const { name, about } = req.body;
     const updatedProfile = await
-    User.findByIdAndUpdate(req.user._id, { name, about, avatar }, { runValidators: true });
+    User.findByIdAndUpdate(req.user._id, { name, about }, { runValidators: true, new: true });
     res.send(updatedProfile);
   } catch (err) {
     userErrorsHandler(err, res);
@@ -71,7 +71,7 @@ module.exports.updateAvatar = async (req, res) => {
   try {
     const { avatar } = req.body;
     const updatedAvatar = await
-    User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true });
+    User.findOneAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true });
     res.send(updatedAvatar);
   } catch (err) {
     if (err.errors.avatar) {
