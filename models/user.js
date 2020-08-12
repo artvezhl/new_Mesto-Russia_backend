@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 /* eslint-disable */
 const urlRegexp = /((https?|http)\:\/\/)?([a-z0-9]{1})((\.[a-z0-9-])|([a-z0-9-]))*\.([a-z]{2,6})(\/?)(\w+|\.|\-|\/|\?|\=|\&)*/;
@@ -20,9 +21,14 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    validate: {
-      validator: (v) => urlRegexp.test(v),
-      message: 'Поле "аватар" не является валидным!',
+    link: {
+      type: String,
+      validate: {
+        validator(link) {
+          return validator.isURL(link);
+        },
+      },
+      required: [true, 'В данном поле должна быть ссылка!'],
     },
     required: true,
   },

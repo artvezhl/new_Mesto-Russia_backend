@@ -1,8 +1,5 @@
 const mongoose = require('mongoose');
-
-/* eslint-disable */
-const urlRegexp = /^((https?|http)\:\/\/)?([a-z0-9]{1})((\.[a-z0-9-])|([a-z0-9-]))*\.([a-z]{2,6})(\/?)(\w+|\.|\-|\/|\?|\=|\&)*$/;
-/* eslint-enable */
+const validator = require('validator');
 
 // создание экземпляра схемы с необходимыми полями
 const cardSchema = new mongoose.Schema({
@@ -15,8 +12,9 @@ const cardSchema = new mongoose.Schema({
   link: {
     type: String,
     validate: {
-      validator: (v) => urlRegexp.test(v),
-      message: 'Поле "Ссылка" не является валидным!',
+      validator(link) {
+        return validator.isURL(link);
+      },
     },
     required: [true, 'В данном поле должна быть ссылка!'],
   },
