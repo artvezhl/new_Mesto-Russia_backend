@@ -2,18 +2,8 @@ const User = require('../models/user');
 
 const userErrorsHandler = (err, res) => {
   if (err.name === 'ValidationError') {
-    if (err.errors.name) {
-      res.status(400).send(err.errors.name.message);
-      return;
-    }
-    if (err.errors.about) {
-      res.status(400).send(err.errors.about.message);
-      return;
-    }
-    if (err.errors.avatar) {
-      res.status(400).send(err.errors.avatar.message);
-      return;
-    }
+    res.status(400).send(err.message);
+    return;
   }
   res.status(500).send({ message: 'На сервере произошла ошибка' });
 };
@@ -32,6 +22,10 @@ module.exports.getUsers = async (req, res) => {
 module.exports.getUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
+    if (user === null) {
+      res.status(404).send({ message: `Пользователь с номером ${req.params.userId} отсутствует!` });
+      return;
+    }
     res.send(user);
   } catch (err) {
     console.log(err.name);
@@ -74,8 +68,8 @@ module.exports.updateAvatar = async (req, res) => {
     User.findOneAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true });
     res.send(updatedAvatar);
   } catch (err) {
-    if (err.errors.avatar) {
-      res.status(400).send({ message: "Поле 'avatar' не является валидным!" });
+    if (err.name === 'ValidationError') {
+      res.status(400).send(err.message);
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });

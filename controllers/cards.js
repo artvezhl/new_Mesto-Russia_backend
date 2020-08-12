@@ -18,8 +18,7 @@ module.exports.createCard = async (req, res) => {
     res.send(newCard);
   } catch (err) {
     if (err.name === 'ValidationError') {
-      const field = err.errors.name ? err.errors.name : err.errors.link;
-      res.status(400).send(field.message);
+      res.status(400).send(err.message);
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
@@ -30,11 +29,14 @@ module.exports.createCard = async (req, res) => {
 module.exports.removeCard = async (req, res) => {
   try {
     const cardToRemove = await Card.findByIdAndRemove(req.params.cardId);
-    if (!cardToRemove) throw new Error();
+    if (cardToRemove === null) {
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
+      return;
+    }
     res.send(cardToRemove);
   } catch (err) {
-    if (err instanceof Error) {
-      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
+    if (err.name === 'CastError') {
+      res.status(404).send({ message: `Номер ${req.params.cardId} не является валидным!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
@@ -49,6 +51,10 @@ module.exports.likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
       { new: true },
     );
+    if (cardToLike === null) {
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
+      return;
+    }
     res.send(cardToLike);
   } catch (err) {
     if (err.value) {
@@ -67,6 +73,10 @@ module.exports.dislikeCard = async (req, res) => {
       { $pull: { likes: req.user._id } }, // убрать _id из массива
       { new: true },
     );
+    if (cardToDislike === null) {
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
+      return;
+    }
     res.send(cardToDislike);
   } catch (err) {
     if (err.value) {
