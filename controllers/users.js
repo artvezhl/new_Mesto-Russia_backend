@@ -29,8 +29,8 @@ module.exports.getUser = async (req, res) => {
     res.send(user);
   } catch (err) {
     console.log(err.name);
-    if (err.name === 'CastError') {
-      res.status(404).send({ message: `Пользователь с номером ${req.params.userId} отсутствует!` });
+    if (err.name == 'CastError') {
+      res.status(400).send({ message: `Пользователь с номером ${req.params.userId} отсутствует!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });

@@ -35,8 +35,11 @@ module.exports.removeCard = async (req, res) => {
     }
     res.send(cardToRemove);
   } catch (err) {
-    if (err.name === 'CastError') {
-      res.status(404).send({ message: `Номер ${req.params.cardId} не является валидным!` });
+    console.log('___________________________________________________________');
+    console.log(err);
+    console.log('___________________________________________________________');
+    if (err.name == 'CastError') {
+      res.status(400).send({ message: `Номер ${req.params.cardId} не является валидным!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
