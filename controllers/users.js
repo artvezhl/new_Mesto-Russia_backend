@@ -28,8 +28,7 @@ module.exports.getUser = async (req, res) => {
     }
     res.send(user);
   } catch (err) {
-    console.log(err.name);
-    if (err.name == 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: `Пользователь с номером ${req.params.userId} отсутствует!` });
       return;
     }
@@ -68,10 +67,6 @@ module.exports.updateAvatar = async (req, res) => {
     User.findOneAndUpdate(req.user._id, { avatar }, { runValidators: true, new: true });
     res.send(updatedAvatar);
   } catch (err) {
-    if (err.name === 'ValidationError') {
-      res.status(400).send(err.message);
-      return;
-    }
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
+    userErrorsHandler(err, res);
   }
 };

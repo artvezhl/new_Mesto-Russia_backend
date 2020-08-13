@@ -1,10 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-/* eslint-disable */
-const urlRegexp = /((https?|http)\:\/\/)?([a-z0-9]{1})((\.[a-z0-9-])|([a-z0-9-]))*\.([a-z]{2,6})(\/?)(\w+|\.|\-|\/|\?|\=|\&)*/;
-/* eslint-enable */
-
 // создание экземпляра схемы с необходимыми полями
 const userSchema = new mongoose.Schema({
   name: {
@@ -21,16 +17,12 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
-    link: {
-      type: String,
-      validate: {
-        validator(link) {
-          return validator.isURL(link);
-        },
+    validate: {
+      validator(link) {
+        return validator.isURL(link);
       },
-      required: [true, 'В данном поле должна быть ссылка!'],
     },
-    required: true,
+    required: [true, 'Поле "аватар" не является валидным!'],
   },
 });
 

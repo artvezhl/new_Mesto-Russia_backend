@@ -35,10 +35,7 @@ module.exports.removeCard = async (req, res) => {
     }
     res.send(cardToRemove);
   } catch (err) {
-    console.log('___________________________________________________________');
-    console.log(err);
-    console.log('___________________________________________________________');
-    if (err.name == 'CastError') {
+    if (err.name === 'CastError') {
       res.status(400).send({ message: `Номер ${req.params.cardId} не является валидным!` });
       return;
     }
@@ -60,7 +57,7 @@ module.exports.likeCard = async (req, res) => {
     }
     res.send(cardToLike);
   } catch (err) {
-    if (err.value) {
+    if (err.name === 'CastError') {
       res.status(404).send({ message: `Карточка с номером ${err.value} отсутствует!` });
       return;
     }
@@ -82,7 +79,7 @@ module.exports.dislikeCard = async (req, res) => {
     }
     res.send(cardToDislike);
   } catch (err) {
-    if (err.value) {
+    if (err.name === 'CastError') {
       res.status(404).send({ message: `Карточка с номером ${err.value} отсутствует!` });
       return;
     }
