@@ -58,7 +58,7 @@ module.exports.likeCard = async (req, res) => {
     res.send(cardToLike);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: `Карточка с номером ${err.value} отсутствует!` });
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
@@ -80,7 +80,7 @@ module.exports.dislikeCard = async (req, res) => {
     res.send(cardToDislike);
   } catch (err) {
     if (err.name === 'CastError') {
-      res.status(404).send({ message: `Карточка с номером ${err.value} отсутствует!` });
+      res.status(404).send({ message: `Карточка с номером ${req.params.cardId} отсутствует!` });
       return;
     }
     res.status(500).send({ message: 'На сервере произошла ошибка' });
